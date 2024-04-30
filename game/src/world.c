@@ -1,4 +1,5 @@
 #include "world.h"
+#include "stdlib.h"
 #include <assert.h>
 
 Body* bodies = NULL;
@@ -6,7 +7,8 @@ int bodyCount = 0;
 
 Body* CreateBody() {
 	//Allocate memory for new Body
-	Body* newbody = (Body*)malloc(sizeof(Body));
+	Body* newbody;
+	newbody = (Body*)malloc(sizeof(Body));
 	//Check if allocation is successful
 	assert(newbody != NULL);
 	//Initialize 'prev' to NULL and 'next' to the head of the list

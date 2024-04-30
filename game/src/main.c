@@ -31,6 +31,8 @@ int main(void)
 			//bodies[bodyCount].velocity = CreateVector2(GetRandomFloatValue(-5, 5), GetRandomFloatValue(-5, 5));
 			//bodyCount++;
 			CreateBody();
+			bodies->position = position;
+			bodies->velocity = CreateVector2(GetRandomFloatValue(-5, 5), GetRandomFloatValue(-5, 5));
 		}
 
 		BeginDrawing();
