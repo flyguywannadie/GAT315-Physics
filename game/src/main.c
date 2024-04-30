@@ -1,5 +1,6 @@
 #include "body.h"
 #include "mathf.h"
+#include "world.h"
 #include "raylib.h"
 #include "raymath.h"
 
@@ -14,9 +15,9 @@ int main(void)
 	InitWindow(1280, 720, "raylib [core] example - basic window");
 	SetTargetFPS(60);
 
-	Body* bodies = (Body*)malloc(sizeof(Body) * MAX_BODIES);
-	assert(bodies != NULL);
-	int bodyCount = 0;
+	//Body* bodies = (Body*)malloc(sizeof(Body) * MAX_BODIES);
+	//assert(bodies != NULL);
+	//int bodyCount = 0;
 
 
 	while (!WindowShouldClose())
@@ -26,9 +27,10 @@ int main(void)
 
 		Vector2 position = GetMousePosition();
 		if (IsMouseButtonPressed(0)) {
-			bodies[bodyCount].position = position;
-			bodies[bodyCount].velocity = CreateVector2(GetRandomFloatValue(-5, 5), GetRandomFloatValue(-5, 5));
-			bodyCount++;
+			//bodies[bodyCount].position = position;
+			//bodies[bodyCount].velocity = CreateVector2(GetRandomFloatValue(-5, 5), GetRandomFloatValue(-5, 5));
+			//bodyCount++;
+			CreateBody();
 		}
 
 		BeginDrawing();
@@ -38,10 +40,13 @@ int main(void)
 
 		DrawCircle(position.x, position.y, 10, YELLOW);
 
-		for (int i = 0; i < bodyCount; i++) {
-			bodies[i].position = Vector2Add(bodies[i].position, bodies[i].velocity);
+		Body* body = bodies;
+		while (body){
+			body->position = Vector2Add(body->position, body->velocity);
 
-			DrawCircle(bodies[i].position.x, bodies[i].position.y, 5, RED);
+			DrawCircle(body->position.x, body->position.y, 5, RED);
+
+			body = body->next;
 		}
 
 		//DrawText("Congrats! You created your first window!", 190, 200, 20, LIGHTGRAY);
