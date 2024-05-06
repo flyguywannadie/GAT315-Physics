@@ -1,3 +1,5 @@
+#include "Integrater.h"
+#include "force.h"
 #include "body.h"
 #include "mathf.h"
 #include "world.h"
@@ -15,6 +17,12 @@ int main(void)
 	InitWindow(1280, 720, "raylib [core] example - basic window");
 	SetTargetFPS(60);
 
+	// Initialize World
+	mfGravity = (Vector2){ 0,981 };
+	
+	int rocketSelection = 0;
+	enum { creeperSize = 54 }; // this is to make instruction arrays with so that I can make custom shapes with rockets
+
 	//Body* bodies = (Body*)malloc(sizeof(Body) * MAX_BODIES);
 	//assert(bodies != NULL);
 	//int bodyCount = 0;
@@ -25,38 +33,237 @@ int main(void)
 		float dt = GetFrameTime();
 		float fps = (float)GetFPS();
 
-		Vector2 position = GetMousePosition();
-		if (IsMouseButtonPressed(0)) {
-			//bodies[bodyCount].position = position;
-			//bodies[bodyCount].velocity = CreateVector2(GetRandomFloatValue(-5, 5), GetRandomFloatValue(-5, 5));
-			//bodyCount++;
-			CreateBody();
-			bodies->position = position;
-			bodies->velocity = CreateVector2(GetRandomFloatValue(-5, 5), GetRandomFloatValue(-5, 5));
+		if (IsKeyPressed(KEY_Q)) {
+			rocketSelection--;
+		}
+		if (IsKeyPressed(KEY_E)) {
+			rocketSelection++;
+		}
+		if (IsKeyPressed(KEY_R)) {
+			rocketSelection = 0;
 		}
 
+
+		Vector2 position = GetMousePosition();
+
+		//bodies[bodyCount].position = position;
+		//bodies[bodyCount].velocity = CreateVector2(GetRandomFloatValue(-5, 5), GetRandomFloatValue(-5, 5));
+		//bodyCount++;
+
+		switch (rocketSelection) {
+		case 0: 		// Basic Firework
+			if (IsMouseButtonPressed(0)) { 
+				for (int i = 0; i < 100; i++) {
+					mfBody* body = CreateBody();
+					body->position = position;
+					//ApplyForce(body, CreateVector2(GetRandomFloatValue(-50, 50), GetRandomFloatValue(-50, 50)));
+					body->mass = GetRandomFloatValue(1, 5);
+					body->inverseMass = 1 / body->mass;
+					body->type = BT_DYNAMIC;
+					body->damping = 2.5f;
+					body->gravityScale = 1;
+					body->color = ColorFromHSV(GetRandomValue(0, 360), 1, 1);
+					ApplyForce(body, Vector2Scale(Vector2Normalize(CreateVector2(GetRandomFloatValue(-1, 1), GetRandomFloatValue(-1, 1))), GetRandomFloatValue(1, 1000)), FM_VELOCITY);
+				}
+				break;
+			}
+		case 1: 
+			if (IsMouseButtonPressed(0)) { // Creeper Minecraft Firework
+				Vector2 creeper[creeperSize];
+
+				for (int i = 0; i < creeperSize; i++) {
+					creeper[i] = (Vector2){ 0,0 };
+				}
+				//  0 0 0 0       0 0 0 0
+				creeper[0] = (Vector2){ 10, -10 };
+				creeper[1] = (Vector2){ 8, -10 };
+				creeper[2] = (Vector2){ 6, -10 };
+				creeper[3] = (Vector2){ 4, -10 };
+				creeper[4] = (Vector2){ -10, -10 };
+				creeper[5] = (Vector2){ -8, -10 };
+				creeper[6] = (Vector2){ -6, -10 };
+				creeper[7] = (Vector2){ -4, -10 };
+				//  0     0       0     0
+				creeper[8] = (Vector2){ 10, -8 };
+				creeper[9] = (Vector2){ 4, -8 };
+				creeper[10] = (Vector2){ -10, -8 };
+				creeper[11] = (Vector2){ -4, -8 };
+				//  0     0       0     0
+				creeper[12] = (Vector2){ 10, -6 };
+				creeper[13] = (Vector2){ 4, -6 };
+				creeper[14] = (Vector2){ -10, -6 };
+				creeper[15] = (Vector2){ -4, -6 };
+				//  0 0 0 0       0 0 0 0
+				creeper[16] = (Vector2){ 10, -4 };
+				creeper[17] = (Vector2){ 8, -4 };
+				creeper[18] = (Vector2){ 6, -4 };
+				creeper[19] = (Vector2){ 4, -4 };
+				creeper[20] = (Vector2){ -10, -4 };
+				creeper[21] = (Vector2){ -8, -4 };
+				creeper[22] = (Vector2){ -6, -4 };
+				creeper[23] = (Vector2){ -4, -4 };
+				//        0 0 0 0 0      
+				creeper[24] = (Vector2){ 4, -2 };
+				creeper[25] = (Vector2){ 2, -2 };
+				creeper[26] = (Vector2){ 0, -2 };
+				creeper[27] = (Vector2){ -2, -2 };
+				creeper[28] = (Vector2){ -4, -2 };
+				//    0 0 0       0 0 0  
+				creeper[29] = (Vector2){ -8, 0 };
+				creeper[30] = (Vector2){ -6, 0 };
+				creeper[31] = (Vector2){ -4, 0 };
+				creeper[32] = (Vector2){ 4, 0 };
+				creeper[33] = (Vector2){ 6, 0 };
+				creeper[34] = (Vector2){ 8, 0 };
+				//    0               0  
+				creeper[35] = (Vector2){ -8, 2 };
+				creeper[36] = (Vector2){ 8, 2 };
+				//    0   0 0 0 0 0   0  
+				creeper[37] = (Vector2){ -8, 4 };
+				creeper[38] = (Vector2){ -4, 4 };
+				creeper[39] = (Vector2){ -2, 4 };
+				creeper[40] = (Vector2){ 0, 4 };
+				creeper[41] = (Vector2){ 2, 4 };
+				creeper[42] = (Vector2){ 4, 4 };
+				creeper[43] = (Vector2){ 8, 4 };
+				//    0   0       0   0  
+				creeper[44] = (Vector2){ -8, 6 };
+				creeper[45] = (Vector2){ -4, 6 };
+				creeper[46] = (Vector2){ 4, 6 };
+				creeper[47] = (Vector2){ 8, 6 };
+				//    0 0 0       0 0 0  
+				creeper[48] = (Vector2){ -8, 8 };
+				creeper[49] = (Vector2){ -6, 8 };
+				creeper[50] = (Vector2){ -4, 8 };
+				creeper[51] = (Vector2){ 4, 8 };
+				creeper[52] = (Vector2){ 6, 8 };
+				creeper[53] = (Vector2){ 8, 8 };
+
+				for (int i = 0; i < creeperSize; i++) {
+					mfBody* body = CreateBody();
+					body->position = position;
+					//ApplyForce(body, CreateVector2(GetRandomFloatValue(-50, 50), GetRandomFloatValue(-50, 50)));
+					body->mass = 3;
+					body->inverseMass = 1 / body->mass;
+					body->type = BT_DYNAMIC;
+					body->damping = 2.5f;
+					body->gravityScale = 1.0f;
+					body->color = GREEN;
+					ApplyForce(body, Vector2Scale(CreateVector2(creeper[i].x, creeper[i].y), 300), FM_IMPULSE);
+				}
+			}
+				break;
+		case 2:    // BLOOD SCREEN THING IDK
+			if (IsMouseButtonDown(0)) { 
+				for (int i = 0; i < 5; i++) {
+					Vector2 startpos = CreateVector2(GetRandomValue(0, 1) * GetScreenWidth(), GetRandomValue(0, 1) * GetScreenHeight());
+
+					if (GetRandomValue(0, 1) == 0) {
+						startpos.x = GetRandomFloatValue(0, GetScreenWidth());
+					}
+					else {
+						startpos.y = GetRandomFloatValue(0, GetScreenHeight());
+					}
+
+					mfBody* body = CreateBody();
+					body->position = startpos;
+					//ApplyForce(body, CreateVector2(GetRandomFloatValue(-50, 50), GetRandomFloatValue(-50, 50)));
+					body->mass = GetRandomFloatValue(1, 5);
+					body->inverseMass = 1 / body->mass;
+					body->type = BT_DYNAMIC;
+					body->damping = 2.5f;
+					body->gravityScale = 0.1f;
+					body->color = ColorFromHSV(GetRandomValue(0, 90), 1, 1);
+
+					Vector2 forceDirection = Vector2Subtract(position, startpos);
+
+					ApplyForce(body, Vector2Scale(forceDirection, (body->damping * body->mass)), FM_VELOCITY);
+				}
+				break;
+			}
+		case 3:
+			if (IsMouseButtonDown(0)) {
+				mfBody* body = CreateBody();
+				body->position = position;
+				body->mass = 4;
+				body->inverseMass = 1 / body->mass;
+				body->type = BT_DYNAMIC;
+				body->damping = 2.5f;
+				body->gravityScale = 0.1f;
+				body->color = ColorFromHSV(GetRandomValue(85, 90), 1, 1);
+
+				ApplyForce(body, Vector2Scale(GetVector2FromAngle(mfBodyCount/6.0f), 1000 - mfBodyCount), FM_VELOCITY);
+			}
+			break;
+		}
+
+		// Apply Force
+		//mfBody* body = mfBodies;
+		//while (body) {
+		//	ApplyForce(body, CreateVector2(0, 0), FM_FORCE);
+		//	body = body->next;
+		//}
+		//ApplyGravitation(mfBodies, 1000);
+
+		// update bodies
+		for (mfBody* body = mfBodies; body; body = body->next) {
+			Step(body, dt);
+		}
+		mfBody* body = mfBodies;
+		while (body != NULL) {
+			if (body->position.y > GetScreenHeight()) {
+				mfBody* body2 = body;
+				if (body->prev != NULL) {
+					body = body->prev;
+				}
+				else if (body->next != NULL) {
+					body = body->next;
+				}
+				DestroyBody(body2);
+			}
+			body = body->next;
+		}
+
+
+
+		//body = mfBodies;
+		//while (body) {
+		//	Step(body, dt);
+		//	body = body->next;
+		//}
+
+		// render
 		BeginDrawing();
 		ClearBackground(BLACK);
+		// stats
 		DrawText(TextFormat("FPS: %.2f (ms %.2fms)", fps, 1000/fps), 10, 10, 20, WHITE);
 		DrawText(TextFormat("FPS: %.4f", dt), 10, 30, 20, LIME);
 
 		DrawCircle(position.x, position.y, 10, YELLOW);
 
-		Body* body = bodies;
-		while (body){
-			body->position = Vector2Add(body->position, body->velocity);
-
-			DrawCircle(body->position.x, body->position.y, 5, RED);
-
-			body = body->next;
+		// draw bodies
+		for (mfBody* body = mfBodies; body; body = body->next) {
+			DrawCircle(body->position.x, body->position.y, body->mass, body->color);
 		}
+		//body = mfBodies;
+		//while (body){
+		//	DrawCircle(body->position.x, body->position.y, body->mass, RED);
+
+		//	body = body->next;
+		//}
 
 		//DrawText("Congrats! You created your first window!", 190, 200, 20, LIGHTGRAY);
 		EndDrawing();
 	}
 	CloseWindow();
 
-	free(bodies);
+	free(mfBodies);
+
+	//mfBody* body = mfBodies;
+	//while (body) {
+	//	DestroyBody(body);
+	//	body = body->next;
+	//}
 
 	return 0;
 }
