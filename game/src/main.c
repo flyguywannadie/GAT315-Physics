@@ -41,6 +41,14 @@ int main(void)
 		}
 		if (IsKeyPressed(KEY_R)) {
 			rocketSelection = 0;
+		}	
+		if (IsKeyPressed(KEY_SPACE)) {
+			mfBody* body = mfBodies;
+			while (body != NULL) {
+				mfBody* body2 = body->next;
+				DestroyBody(body);
+				body = body2;
+			}
 		}
 
 
@@ -211,17 +219,11 @@ int main(void)
 		}
 		mfBody* body = mfBodies;
 		while (body != NULL) {
+			mfBody* body2 = body->next;
 			if (body->position.y > GetScreenHeight()) {
-				mfBody* body2 = body;
-				if (body->prev != NULL) {
-					body = body->prev;
-				}
-				else if (body->next != NULL) {
-					body = body->next;
-				}
-				DestroyBody(body2);
+				DestroyBody(body);
 			}
-			body = body->next;
+			body = body2;
 		}
 
 

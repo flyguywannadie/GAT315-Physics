@@ -41,7 +41,7 @@ void DestroyBody(mfBody* body) {
 	}
 
 	if (body == mfBodies) {
-		mfBodies = body->prev;
+		mfBodies = body->next;
 	}
 
 	mfBodyCount--;
