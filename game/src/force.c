@@ -16,8 +16,8 @@ void ApplyGravitation(mfBody* bodies, float strength) {
 
 			direction = Vector2Scale(direction, force);
 
-			ApplyForce(body2, Vector2Negate(direction), FM_FORCE);
-			ApplyForce(body1, direction, FM_FORCE);
+			ApplyForce(body1, Vector2Negate(direction), FM_FORCE);
+			ApplyForce(body2, direction, FM_FORCE);
 		}
 	}
 }
