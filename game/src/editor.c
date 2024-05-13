@@ -1,4 +1,6 @@
 #include "editor.h"
+#include "body.h"
+#include "render.h"
 #define RAYGUI_IMPLEMENTATION
 #include "../../raygui/src/raygui.h"
 
@@ -31,7 +33,7 @@ void InitEditor()
     mfeditorData.MassminValue = 1.0f;
     mfeditorData.MassmaxValue = 5.0f;
     mfeditorData.GravitationValue = 0.0f;
-    mfeditorData.DampingValue = 0.1f;
+    mfeditorData.DampingValue = 1.2f;
     mfeditorData.GravityScaleValue = 1.0f;
     mfeditorData.BodyTypeDropdownEditMode = false;
     mfeditorData.BodyTypeDropdownActive = 0;
@@ -59,7 +61,27 @@ void DrawEditor(Vector2 position)
         if (GuiDropdownBox((Rectangle) { mfeditorData.anchor01.x + 32, mfeditorData.anchor01.y + 56, 200, 32 }, "DYNAMIC;KINEMATIC;STATIC", & mfeditorData.BodyTypeDropdownActive, mfeditorData.BodyTypeDropdownEditMode)) mfeditorData.BodyTypeDropdownEditMode = !mfeditorData.BodyTypeDropdownEditMode;
     }
 
-    GuiUnlock();
-
     DrawTexture(cursorTexture, (int)position.x - (cursorTexture.width/3), (int)position.y - (cursorTexture.height / 3), WHITE);
+
+    GuiUnlock();
+}
+
+mfBody* GetBodyIntersect(mfBody* bodies, Vector2 position)
+{
+    for (mfBody* body = bodies; body; body = body->next)
+    {
+        Vector2 screen = ConvertWorldToScreen(body->position);
+        if (CheckCollisionPointCircle(position, screen, ConvertWorldToPixel(body->mass)))
+        {
+            return body;
+        }
+    }
+
+    return NULL;
+}
+
+void DrawLineBodyToPosition(mfBody* body, Vector2 position)
+{
+    Vector2 screen = ConvertWorldToScreen(body->position);
+    DrawLine((int)screen.x, (int)screen.y, (int)position.x - cursorTexture.width / 2, (int)position.y - cursorTexture.height / 2, YELLOW);
 }

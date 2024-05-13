@@ -27,6 +27,9 @@
     <ClCompile Include="src\editor.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\Spring.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\body.h">
@@ -50,5 +53,11 @@
     <ClInclude Include="src\editor.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\Spring.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
   </ItemGroup>
 </Project>

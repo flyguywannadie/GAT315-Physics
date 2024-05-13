@@ -5,6 +5,7 @@
 #include "body.h"
 #include "mathf.h"
 #include "world.h"
+#include "Spring.h"
 #include "raylib.h"
 #include "raymath.h"
 
@@ -15,6 +16,8 @@
 
 int main(void)
 {
+	mfBody* selectedBody = NULL;
+	mfBody* connectBody = NULL;
 
 	InitWindow(1280, 720, "raylib [core] example - basic window");
 	InitEditor();
@@ -66,9 +69,15 @@ int main(void)
 		//bodies[bodyCount].velocity = CreateVector2(GetRandomFloatValue(-5, 5), GetRandomFloatValue(-5, 5));
 		//bodyCount++;
 
+		selectedBody = GetBodyIntersect(mfBodies, position);
+		if (selectedBody) {
+			Vector2 screen = ConvertWorldToScreen(selectedBody->position);
+			DrawCircleLines(screen.x, screen.y, ConvertWorldToPixel(selectedBody->mass) + 5, YELLOW);
+		}
+
 		switch (rocketSelection) {
 		case 0: // Basic Firework
-			if (IsMouseButtonPressed(0)) { 
+			if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
 				for (int i = 0; i < 1; i++) {
 					mfBody* body = CreateBody(ConvertScreenToWorld(position), mfeditorData.MassminValue, mfeditorData.BodyTypeDropdownActive);
 					body->damping = mfeditorData.DampingValue;
@@ -216,7 +225,22 @@ int main(void)
 		//	ApplyForce(body, CreateVector2(0, 0), FM_FORCE);
 		//	body = body->next;
 		//}
+
+		if (IsMouseButtonPressed(MOUSE_BUTTON_RIGHT) && selectedBody) {
+			connectBody = selectedBody;
+		}
+		if (IsMouseButtonDown(MOUSE_BUTTON_RIGHT) && connectBody) {
+			DrawLineBodyToPosition(connectBody, position);
+		}
+		if (IsMouseButtonReleased(MOUSE_BUTTON_RIGHT) && connectBody) {
+			if (selectedBody && connectBody != selectedBody) {
+				mfSpring_t* spring = CreateSpring(connectBody, selectedBody, 5, 20);
+				AddSpring(spring);
+			}
+		}
+
 		ApplyGravitation(mfBodies, mfeditorData.GravitationValue);
+		ApplySpringForce(mfSprings);
 
 		// update bodies
 		for (mfBody* body = mfBodies; body; body = body->next) {
@@ -230,8 +254,6 @@ int main(void)
 			}
 			body = body2;
 		}
-
-
 
 		//body = mfBodies;
 		//while (body) {
@@ -251,6 +273,12 @@ int main(void)
 		for (mfBody* body = mfBodies; body; body = body->next) {
 			Vector2 screen = ConvertWorldToScreen(body->position);
 			DrawCircle(screen.x, screen.y, ConvertWorldToPixel(body->mass), body->color);
+		}
+		// draw springs
+		for (mfSpring_t* spring = mfSprings; spring; spring = spring->next) {
+			Vector2 screen1 = ConvertWorldToScreen(spring->body1->position);
+			Vector2 screen2 = ConvertWorldToScreen(spring->body2->position);
+			DrawLine(screen1.x, screen1.y, screen2.x, screen2.y, YELLOW);
 		}
 		//body = mfBodies;
 		//while (body){
