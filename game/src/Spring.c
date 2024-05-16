@@ -70,11 +70,11 @@ void ApplySpringForce(mfSpring_t* spring)
 
 		float length = Vector2Length(direction);// <get length from direction>
 		float x = length - spring->restlength;// <compute displacement from current length to resting length>;
-		float force = x * spring->k;// <compute force using product of displacement and stiffness(k)>;
+		float force = -spring->k * x;// <compute force using product of displacement and stiffness(k)>;
 
 		Vector2 ndirection = Vector2Normalize(direction);//<get direction normal>
 
-		ApplyForce(spring->body1, Vector2Negate(Vector2Scale(ndirection, force)), FM_FORCE);
-		ApplyForce(spring->body2, Vector2Scale(ndirection, force), FM_FORCE);
+		ApplyForce(spring->body1, Vector2Scale(ndirection, force), FM_FORCE);
+		ApplyForce(spring->body2, Vector2Scale(Vector2Negate(ndirection), force), FM_FORCE);
 	}
 }

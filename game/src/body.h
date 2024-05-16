@@ -29,6 +29,8 @@ typedef struct mfBody
 	float gravityScale;
 	float damping;
 
+	float restitution;
+
 	Color color;
 
 	struct mfBody* next;

@@ -12,6 +12,8 @@ typedef struct mfEditorData {
     float GravityScaleValue;
     bool BodyTypeDropdownEditMode;
     int BodyTypeDropdownActive;
+    float StiffnessValue;
+    float RestLengthValue;
 } mfEditorData;
 
 extern mfEditorData mfeditorData;

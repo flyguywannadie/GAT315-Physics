@@ -1,11 +1,14 @@
-#include "Integrater.h"
-#include "editor.h"
-#include "render.h"
-#include "force.h"
 #include "body.h"
 #include "mathf.h"
 #include "world.h"
-#include "Spring.h"
+#include "Integrater.h"
+#include "force.h"
+#include "editor.h"
+#include "render.h"
+#include "spring.h"
+#include "Collision.h"
+#include "contact.h"
+
 #include "raylib.h"
 #include "raymath.h"
 
@@ -235,6 +238,10 @@ int main(void)
 		if (IsMouseButtonReleased(MOUSE_BUTTON_RIGHT) && connectBody) {
 			if (selectedBody && connectBody != selectedBody) {
 				mfSpring_t* spring = CreateSpring(connectBody, selectedBody, 5, 20);
+
+				spring->restlength = mfeditorData.RestLengthValue;
+				spring->k = mfeditorData.StiffnessValue;
+
 				AddSpring(spring);
 			}
 		}
@@ -255,6 +262,10 @@ int main(void)
 			body = body2;
 		}
 
+		// collision
+		ncContact_t* contacts = NULL;
+		CreateContacts(mfBodies, &contacts);
+
 		//body = mfBodies;
 		//while (body) {
 		//	Step(body, dt);
@@ -273,6 +284,11 @@ int main(void)
 		for (mfBody* body = mfBodies; body; body = body->next) {
 			Vector2 screen = ConvertWorldToScreen(body->position);
 			DrawCircle(screen.x, screen.y, ConvertWorldToPixel(body->mass), body->color);
+		}
+		// draw contacts
+		for (ncContact_t* contact = contacts; contact; contact = contact->next) {
+			Vector2 screen = ConvertWorldToScreen(contact->body1->position);
+			DrawCircle(screen.x, screen.y, ConvertWorldToPixel(contact->body1->mass), contact->body1->color);
 		}
 		// draw springs
 		for (mfSpring_t* spring = mfSprings; spring; spring = spring->next) {
