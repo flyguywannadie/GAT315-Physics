@@ -18,7 +18,7 @@ mfBody* CreateBody(Vector2 position, float mass, mfBodyType bodytype) {
 
 	newbody->position = position;
 	newbody->mass = mass;
-	newbody->inverseMass = (bodytype == BT_DYNAMIC) ? 1 / mass : 0;
+	newbody->inverseMass = (bodytype == BT_DYNAMIC) ? (1 / (float)mass) : 0;
 	newbody->type = bodytype;
 
 	return newbody;

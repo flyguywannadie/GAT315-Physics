@@ -80,7 +80,7 @@ int main(void)
 
 		switch (rocketSelection) {
 		case 0: // Basic Firework
-			if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
+			if (&& (IsMouseButtonPressed(MOUSE_BUTTON_LEFT) || (IsMouseButtonDown(MOUSE_BUTTON_LEFT) && IsKeyDown(KEY_F)))) {
 				for (int i = 0; i < 1; i++) {
 					mfBody* body = CreateBody(ConvertScreenToWorld(position), mfeditorData.MassminValue, mfeditorData.BodyTypeDropdownActive);
 					body->damping = mfeditorData.DampingValue;
@@ -88,7 +88,6 @@ int main(void)
 					body->color = ColorFromHSV(GetRandomValue(0, 360), 1, 1);
 
 					AddBody(body);
-
 				}
 				break;
 			}
@@ -265,6 +264,8 @@ int main(void)
 		// collision
 		ncContact_t* contacts = NULL;
 		CreateContacts(mfBodies, &contacts);
+		SeparateContacts(contacts);
+		ResolveContacts(contacts);
 
 		//body = mfBodies;
 		//while (body) {
@@ -283,12 +284,12 @@ int main(void)
 		// draw bodies
 		for (mfBody* body = mfBodies; body; body = body->next) {
 			Vector2 screen = ConvertWorldToScreen(body->position);
-			DrawCircle(screen.x, screen.y, ConvertWorldToPixel(body->mass), body->color);
+			DrawCircle(screen.x, screen.y, ConvertWorldToPixel(body->mass * 0.5f), body->color);
 		}
 		// draw contacts
 		for (ncContact_t* contact = contacts; contact; contact = contact->next) {
 			Vector2 screen = ConvertWorldToScreen(contact->body1->position);
-			DrawCircle(screen.x, screen.y, ConvertWorldToPixel(contact->body1->mass), contact->body1->color);
+			DrawCircle(screen.x, screen.y, ConvertWorldToPixel(contact->body1->mass * 0.5f), contact->body1->color);
 		}
 		// draw springs
 		for (mfSpring_t* spring = mfSprings; spring; spring = spring->next) {
