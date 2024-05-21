@@ -21,6 +21,10 @@ int main(void)
 {
 	mfBody* selectedBody = NULL;
 	mfBody* connectBody = NULL;
+	ncContact_t* contacts = NULL;
+
+	float fixedTimeStep = 1.0f / 50.0f;
+	float timeAccumulator;
 
 	InitWindow(1280, 720, "raylib [core] example - basic window");
 	InitEditor();
@@ -80,7 +84,7 @@ int main(void)
 
 		switch (rocketSelection) {
 		case 0: // Basic Firework
-			if (&& (IsMouseButtonPressed(MOUSE_BUTTON_LEFT) || (IsMouseButtonDown(MOUSE_BUTTON_LEFT) && IsKeyDown(KEY_F)))) {
+			if ((IsMouseButtonPressed(MOUSE_BUTTON_LEFT) || (IsMouseButtonDown(MOUSE_BUTTON_LEFT) && IsKeyDown(KEY_F)))) {
 				for (int i = 0; i < 1; i++) {
 					mfBody* body = CreateBody(ConvertScreenToWorld(position), mfeditorData.MassminValue, mfeditorData.BodyTypeDropdownActive);
 					body->damping = mfeditorData.DampingValue;
@@ -245,13 +249,27 @@ int main(void)
 			}
 		}
 
-		ApplyGravitation(mfBodies, mfeditorData.GravitationValue);
-		ApplySpringForce(mfSprings);
 
+		timeAccumulator += dt;
 		// update bodies
-		for (mfBody* body = mfBodies; body; body = body->next) {
-			Step(body, dt);
+		while (timeAccumulator >= fixedTimeStep) {
+			timeAccumulator -= fixedTimeStep;
+			
+			ApplyGravitation(mfBodies, mfeditorData.GravitationValue);
+			ApplySpringForce(mfSprings);
+
+			for (mfBody* body = mfBodies; body; body = body->next) {
+				Step(body, dt);
+			}
+
+			// collision
+			contacts = NULL;
+			CreateContacts(mfBodies, &contacts);
+			SeparateContacts(contacts);
+			ResolveContacts(contacts);
 		}
+
+		// delete bodies
 		mfBody* body = mfBodies;
 		while (body != NULL) {
 			mfBody* body2 = body->next;
@@ -260,18 +278,6 @@ int main(void)
 			}
 			body = body2;
 		}
-
-		// collision
-		ncContact_t* contacts = NULL;
-		CreateContacts(mfBodies, &contacts);
-		SeparateContacts(contacts);
-		ResolveContacts(contacts);
-
-		//body = mfBodies;
-		//while (body) {
-		//	Step(body, dt);
-		//	body = body->next;
-		//}
 
 		// render
 		BeginDrawing();

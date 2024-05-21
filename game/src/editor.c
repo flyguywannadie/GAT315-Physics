@@ -59,7 +59,7 @@ void DrawEditor(Vector2 position)
         GuiGroupBox((Rectangle) { mfeditorData.anchor01.x + 16,  mfeditorData.anchor01.y + 40, 232, 200 }, "Body");
         GuiGroupBox((Rectangle) { mfeditorData.anchor01.x + 16,  mfeditorData.anchor01.y + 256, 232, 112 }, "World");
         GuiSliderBar((Rectangle) {  mfeditorData.anchor01.x + 112,  mfeditorData.anchor01.y + 144, 120, 16 }, "Damping", NULL, &  mfeditorData.DampingValue, 0, 10);
-        GuiSliderBar((Rectangle) {  mfeditorData.anchor01.x + 112,  mfeditorData.anchor01.y + 168, 120, 16 }, "Gravity Scale", NULL, &  mfeditorData.GravityScaleValue, 0, 10);
+        GuiSliderBar((Rectangle) {  mfeditorData.anchor01.x + 112,  mfeditorData.anchor01.y + 168, 120, 16 }, "Gravity Scale", NULL, &  mfeditorData.GravityScaleValue, 0, 100);
         GuiSliderBar((Rectangle) {  mfeditorData.anchor01.x + 112,  mfeditorData.anchor01.y + 192, 120, 16 }, "Stiffness (k)", NULL, &  mfeditorData.StiffnessValue, 0, 20);
         GuiSliderBar((Rectangle) {  mfeditorData.anchor01.x + 112,  mfeditorData.anchor01.y + 216, 120, 16 }, "Rest Length", NULL, &  mfeditorData.RestLengthValue, 0, 10);
         if (GuiDropdownBox((Rectangle) { mfeditorData.anchor01.x + 32, mfeditorData.anchor01.y + 56, 200, 32 }, "DYNAMIC;KINEMATIC;STATIC", &  mfeditorData.BodyTypeDropdownActive,  mfeditorData.BodyTypeDropdownEditMode))  mfeditorData.BodyTypeDropdownEditMode = ! mfeditorData.BodyTypeDropdownEditMode;
