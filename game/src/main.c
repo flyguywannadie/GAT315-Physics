@@ -22,6 +22,8 @@ int main(void)
 	mfBody* selectedBody = NULL;
 	mfBody* connectBody = NULL;
 	ncContact_t* contacts = NULL;
+	mfBody* mouse = CreateBody(GetMousePosition(),0, BT_STATIC);
+	mfSpring_t* mouseSpring = NULL;
 
 	float fixedTimeStep = 1.0f / mfeditorData.TimeStepValue;
 	float timeAccumulator = 0.0f;
@@ -43,6 +45,7 @@ int main(void)
 
 	while (!WindowShouldClose())
 	{
+		mouse->position = ConvertScreenToWorld(GetMousePosition());
 		if (mfeditorData.SimulateToggleActive) { continue; }
 
 		float dt = GetFrameTime();
@@ -73,10 +76,6 @@ int main(void)
 		ncScreenZoom = Clamp(ncScreenZoom, 0.1f, 10.0f);
 
 		UpdateEditor(position);
-
-		//bodies[bodyCount].position = position;
-		//bodies[bodyCount].velocity = CreateVector2(GetRandomFloatValue(-5, 5), GetRandomFloatValue(-5, 5));
-		//bodyCount++;
 
 		selectedBody = GetBodyIntersect(mfBodies, position);
 		if (selectedBody) {
@@ -236,18 +235,23 @@ int main(void)
 
 		if (IsMouseButtonPressed(MOUSE_BUTTON_RIGHT) && selectedBody) {
 			connectBody = selectedBody;
+			if (IsKeyDown(KEY_F)) {
+				mfSpring_t* spring = CreateSpring(connectBody, mouse, mfeditorData.RestLengthValue, mfeditorData.StiffnessValue);
+				mouseSpring = spring;
+				AddSpring(mouseSpring);
+			}
 		}
 		if (IsMouseButtonDown(MOUSE_BUTTON_RIGHT) && connectBody) {
 			DrawLineBodyToPosition(connectBody, position);
 		}
-		if (IsMouseButtonReleased(MOUSE_BUTTON_RIGHT) && connectBody) {
-			if (selectedBody && connectBody != selectedBody) {
-				mfSpring_t* spring = CreateSpring(connectBody, selectedBody, 5, 20);
-
-				spring->restlength = mfeditorData.RestLengthValue;
-				spring->k = mfeditorData.StiffnessValue;
-
+		if (IsMouseButtonReleased(MOUSE_BUTTON_RIGHT)) {
+			if (connectBody && selectedBody && connectBody != selectedBody) {
+				mfSpring_t* spring = CreateSpring(connectBody, selectedBody, mfeditorData.RestLengthValue, mfeditorData.StiffnessValue);
 				AddSpring(spring);
+			}
+			if (mouseSpring) {
+				DestroySpring(mouseSpring);
+				mouseSpring = NULL;
 			}
 		}
 
@@ -293,6 +297,12 @@ int main(void)
 				DestroyBody(body);
 				body = body2;
 			}
+			mfSpring_t* spring = mfSprings;
+			while (spring != NULL) {
+				mfSpring_t* spring2 = spring->next;
+				DestroySpring(spring);
+				spring = spring2;
+			}
 		}
 
 		mfBody* body = mfBodies;
@@ -328,12 +338,6 @@ int main(void)
 			Vector2 screen2 = ConvertWorldToScreen(spring->body2->position);
 			DrawLine(screen1.x, screen1.y, screen2.x, screen2.y, YELLOW);
 		}
-		//body = mfBodies;
-		//while (body){
-		//	DrawCircle(body->position.x, body->position.y, body->mass, RED);
-
-		//	body = body->next;
-		//}
 
 		//DrawText("Congrats! You created your first window!", 190, 200, 20, LIGHTGRAY);
 		DrawEditor(position);

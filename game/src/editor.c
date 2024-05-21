@@ -97,5 +97,5 @@ mfBody* GetBodyIntersect(mfBody* bodies, Vector2 position)
 void DrawLineBodyToPosition(mfBody* body, Vector2 position)
 {
     Vector2 screen = ConvertWorldToScreen(body->position);
-    DrawLine((int)screen.x, (int)screen.y, (int)position.x - cursorTexture.width / 2, (int)position.y - cursorTexture.height / 2, YELLOW);
+    DrawLine((int)screen.x, (int)screen.y, (int)position.x, (int)position.y, YELLOW);
 }
