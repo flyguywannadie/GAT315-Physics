@@ -43,6 +43,8 @@ int main(void)
 
 	while (!WindowShouldClose())
 	{
+		if (mfeditorData.SimulateToggleActive) { continue; }
+
 		float dt = GetFrameTime();
 		float fps = (float)GetFPS();
 
@@ -249,25 +251,11 @@ int main(void)
 			}
 		}
 
-		if (mfeditorData.SimulateToggleActive) {
-			timeAccumulator += dt;
-			// update bodies
-			while (timeAccumulator >= fixedTimeStep) {
-				timeAccumulator -= fixedTimeStep;
-
-				ApplyGravitation(mfBodies, mfeditorData.GravitationValue);
-				ApplySpringForce(mfSprings);
-
-				for (mfBody* body = mfBodies; body; body = body->next) {
-					Step(body, dt);
-				}
-
-				// collision
-				contacts = NULL;
-				CreateContacts(mfBodies, &contacts);
-				SeparateContacts(contacts);
-				ResolveContacts(contacts);
-			}
+		
+		timeAccumulator += dt;
+		// update bodies
+		while (timeAccumulator >= fixedTimeStep) {
+			timeAccumulator -= fixedTimeStep;
 
 			ApplyGravitation(mfBodies, mfeditorData.GravitationValue);
 			ApplySpringForce(mfSprings);
@@ -282,6 +270,20 @@ int main(void)
 			SeparateContacts(contacts);
 			ResolveContacts(contacts);
 		}
+
+		ApplyGravitation(mfBodies, mfeditorData.GravitationValue);
+		ApplySpringForce(mfSprings);
+
+		for (mfBody* body = mfBodies; body; body = body->next) {
+			Step(body, dt);
+		}
+
+		// collision
+		contacts = NULL;
+		CreateContacts(mfBodies, &contacts);
+		SeparateContacts(contacts);
+		ResolveContacts(contacts);
+
 
 		// delete bodies
 		if (mfeditorData.ResetButtonPressed) {
