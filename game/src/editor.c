@@ -17,6 +17,8 @@ Texture2D cursorTexture;
 
 bool EditorBoxActive = true;
 
+#define EDITOR_DATA(data) TextFormat("%0.2f", data), &data
+
 void InitEditor()
 {
     GuiLoadStyle("raygui/styles/lavanda/style_lavanda.rgs");
@@ -34,11 +36,15 @@ void InitEditor()
     mfeditorData.MassmaxValue = 5.0f;
     mfeditorData.GravitationValue = 0.0f;
     mfeditorData.DampingValue = 1.2f;
-    mfeditorData.GravityScaleValue = 0.0f;
+    mfeditorData.GravityScaleValue = 1.0f;
     mfeditorData.BodyTypeDropdownEditMode = false;
     mfeditorData.BodyTypeDropdownActive = 0;
     mfeditorData.StiffnessValue = 1.0f;
     mfeditorData.RestLengthValue = 3.0f;
+    mfeditorData.TimeStepValue = 50.0f;
+    mfeditorData.GravityValue = -1.0f;
+    bool ResetButtonPressed = false;
+    bool SimulateToggleActive = true;
 }
 
 void UpdateEditor(Vector2 position)
@@ -53,15 +59,19 @@ void DrawEditor(Vector2 position)
     if (mfeditorData.EditorBoxActive)
     {
         mfeditorData.EditorBoxActive = !GuiWindowBox((Rectangle) { mfeditorData.anchor01.x + 0, mfeditorData.anchor01.y + 0, 264, 640 }, "Editor");
-        GuiSliderBar((Rectangle) { mfeditorData.anchor01.x + 112,  mfeditorData.anchor01.y + 120, 120, 16 }, "Mass Max", NULL, &  mfeditorData.MassmaxValue, 5, 10);
-        GuiSliderBar((Rectangle) {  mfeditorData.anchor01.x + 112,  mfeditorData.anchor01.y + 96, 120, 16 }, "Mass Min", NULL, &  mfeditorData.MassminValue, 0, 10);
-        GuiSliderBar((Rectangle) {  mfeditorData.anchor01.x + 88,  mfeditorData.anchor01.y + 272, 120, 16 }, "Gravitation", NULL, &  mfeditorData.GravitationValue, -20, 20);
+        GuiSliderBar((Rectangle) { mfeditorData.anchor01.x + 112,  mfeditorData.anchor01.y + 120, 120, 16 }, "Mass Max", EDITOR_DATA(mfeditorData.MassmaxValue), 5, 10);
+        GuiSliderBar((Rectangle) {  mfeditorData.anchor01.x + 112,  mfeditorData.anchor01.y + 96, 120, 16 }, "Mass Min", EDITOR_DATA(mfeditorData.MassminValue), 0, 10);
         GuiGroupBox((Rectangle) { mfeditorData.anchor01.x + 16,  mfeditorData.anchor01.y + 40, 232, 200 }, "Body");
         GuiGroupBox((Rectangle) { mfeditorData.anchor01.x + 16,  mfeditorData.anchor01.y + 256, 232, 112 }, "World");
-        GuiSliderBar((Rectangle) {  mfeditorData.anchor01.x + 112,  mfeditorData.anchor01.y + 144, 120, 16 }, "Damping", NULL, &  mfeditorData.DampingValue, 0, 10);
-        GuiSliderBar((Rectangle) {  mfeditorData.anchor01.x + 112,  mfeditorData.anchor01.y + 168, 120, 16 }, "Gravity Scale", NULL, &  mfeditorData.GravityScaleValue, 0, 100);
-        GuiSliderBar((Rectangle) {  mfeditorData.anchor01.x + 112,  mfeditorData.anchor01.y + 192, 120, 16 }, "Stiffness (k)", NULL, &  mfeditorData.StiffnessValue, 0, 20);
-        GuiSliderBar((Rectangle) {  mfeditorData.anchor01.x + 112,  mfeditorData.anchor01.y + 216, 120, 16 }, "Rest Length", NULL, &  mfeditorData.RestLengthValue, 0, 10);
+        GuiSliderBar((Rectangle) {  mfeditorData.anchor01.x + 112,  mfeditorData.anchor01.y + 144, 120, 16 }, "Damping", EDITOR_DATA(mfeditorData.DampingValue), 0, 10);
+        GuiSliderBar((Rectangle) {  mfeditorData.anchor01.x + 112,  mfeditorData.anchor01.y + 168, 120, 16 }, "Gravity Scale", EDITOR_DATA(mfeditorData.GravityScaleValue), 0, 100);
+        GuiSliderBar((Rectangle) {  mfeditorData.anchor01.x + 112,  mfeditorData.anchor01.y + 192, 120, 16 }, "Stiffness (k)", EDITOR_DATA(mfeditorData.StiffnessValue), 0, 20);
+        GuiSliderBar((Rectangle) { mfeditorData.anchor01.x + 112, mfeditorData.anchor01.y + 216, 120, 16 }, "Rest Length", EDITOR_DATA(mfeditorData.RestLengthValue), 0, 10);
+        GuiSliderBar((Rectangle) { mfeditorData.anchor01.x + 112, mfeditorData.anchor01.y + 360, 120, 16 }, "Time Step", EDITOR_DATA(mfeditorData.TimeStepValue), 0, 100);
+        GuiSlider((Rectangle) { mfeditorData.anchor01.x + 112, mfeditorData.anchor01.y + 336, 120, 16 }, "Gravity", EDITOR_DATA(mfeditorData.GravityValue), -10, 10);
+        GuiSlider((Rectangle) { mfeditorData.anchor01.x + 112, mfeditorData.anchor01.y + 312, 120, 16 }, "Gravitation", EDITOR_DATA(mfeditorData.GravitationValue), -20, 20);
+        mfeditorData.ResetButtonPressed = GuiButton((Rectangle) { mfeditorData.anchor01.x + 16, mfeditorData.anchor01.y + 584, 88, 32 }, "Reset");
+        GuiToggle((Rectangle) { mfeditorData.anchor01.x + 160, mfeditorData.anchor01.y + 584, 88, 32 }, "Simulate", & mfeditorData.SimulateToggleActive);
         if (GuiDropdownBox((Rectangle) { mfeditorData.anchor01.x + 32, mfeditorData.anchor01.y + 56, 200, 32 }, "DYNAMIC;KINEMATIC;STATIC", &  mfeditorData.BodyTypeDropdownActive,  mfeditorData.BodyTypeDropdownEditMode))  mfeditorData.BodyTypeDropdownEditMode = ! mfeditorData.BodyTypeDropdownEditMode;
     }
 

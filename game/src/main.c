@@ -23,15 +23,15 @@ int main(void)
 	mfBody* connectBody = NULL;
 	ncContact_t* contacts = NULL;
 
-	float fixedTimeStep = 1.0f / 50.0f;
-	float timeAccumulator;
+	float fixedTimeStep = 1.0f / mfeditorData.TimeStepValue;
+	float timeAccumulator = 0.0f;
 
 	InitWindow(1280, 720, "raylib [core] example - basic window");
 	InitEditor();
 	SetTargetFPS(60);
 
 	// Initialize World
-	mfGravity = (Vector2){ 0,-1 };
+	mfGravity = (Vector2){ 0,mfeditorData.GravityValue };
 	
 	int rocketSelection = 0;
 	enum { creeperSize = 54 }; // this is to make instruction arrays with so that I can make custom shapes with rockets
@@ -249,12 +249,26 @@ int main(void)
 			}
 		}
 
+		if (mfeditorData.SimulateToggleActive) {
+			timeAccumulator += dt;
+			// update bodies
+			while (timeAccumulator >= fixedTimeStep) {
+				timeAccumulator -= fixedTimeStep;
 
-		timeAccumulator += dt;
-		// update bodies
-		while (timeAccumulator >= fixedTimeStep) {
-			timeAccumulator -= fixedTimeStep;
-			
+				ApplyGravitation(mfBodies, mfeditorData.GravitationValue);
+				ApplySpringForce(mfSprings);
+
+				for (mfBody* body = mfBodies; body; body = body->next) {
+					Step(body, dt);
+				}
+
+				// collision
+				contacts = NULL;
+				CreateContacts(mfBodies, &contacts);
+				SeparateContacts(contacts);
+				ResolveContacts(contacts);
+			}
+
 			ApplyGravitation(mfBodies, mfeditorData.GravitationValue);
 			ApplySpringForce(mfSprings);
 
@@ -270,6 +284,15 @@ int main(void)
 		}
 
 		// delete bodies
+		if (mfeditorData.ResetButtonPressed) {
+			mfBody* body = mfBodies;
+			while (body != NULL) {
+				mfBody* body2 = body->next;
+				DestroyBody(body);
+				body = body2;
+			}
+		}
+
 		mfBody* body = mfBodies;
 		while (body != NULL) {
 			mfBody* body2 = body->next;
